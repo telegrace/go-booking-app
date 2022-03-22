@@ -33,26 +33,34 @@ func main() {
 
 		fmt.Println("Please number of tickets:")
 		fmt.Scan(&userTickets)
-		remainingTickets = remainingTickets - userTickets 	
-		// bookings[0]= firstName + " " + lastName
-		bookings = append(bookings, firstName + " " + lastName) //no longer need to keep track of indices
-
-		fmt.Printf("Thank you %v %v for booking %v ticket(s). We've sent a confirmation email at %v.\n", firstName, lastName, userTickets, email)
-		fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
-		firstNames := []string{}
-		for _, booking := range bookings {
-			var names = strings.Fields(booking)
-			var firstName = names[0]
-			firstNames = append(firstNames, firstName)
-		}
-		fmt.Printf("The first names of bookings are: %v\n", firstNames)
 		
-		if remainingTickets == 0{
-			fmt.Println("Our conference is sold out. Come back next year.")
-			break
+		// if userTickets > remainingTickets {
+		// 	fmt.Printf("Sorry, we only have %v tickets remaining, so you can't book %v.\n", remainingTickets, userTickets)
+		// 	continue // goes to the next iteration
+		// }
+
+		if userTickets <= remainingTickets {
+			remainingTickets = remainingTickets - userTickets 	
+			// bookings[0]= firstName + " " + lastName
+			bookings = append(bookings, firstName + " " + lastName) //no longer need to keep track of indices
+
+			fmt.Printf("Thank you %v %v for booking %v ticket(s). We've sent a confirmation email at %v.\n", firstName, lastName, userTickets, email)
+			fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+			firstNames := []string{}
+			for _, booking := range bookings {
+				var names = strings.Fields(booking)
+				var firstName = names[0]
+				firstNames = append(firstNames, firstName)
+			}
+			fmt.Printf("The first names of bookings are: %v\n", firstNames)
+			
+			if remainingTickets == 0{
+				fmt.Println("Our conference is sold out. Come back next year.")
+				break
+			}
+		} else {
+			fmt.Printf("Sorry, we only have %v tickets remaining, so you can't book %v.\n", remainingTickets, userTickets)
+			continue
 		}
 	}
-
-	
-
 }
