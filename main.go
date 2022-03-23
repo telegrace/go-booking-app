@@ -4,24 +4,26 @@ import (
 	"fmt"
 	"strings"
 )
+
+// to avoid reptition we can define variables shares among functions (package level variables) and they can't use :=
+const conferenceTickets = 50
+var conferenceName = "Go Conference"
+var remainingTickets uint = 50 
+var bookings []string 
+
 func main() {
-	conferenceName := "Go Conference"
-	const conferenceTickets = 50
-	var remainingTickets uint = 50 
-	var bookings []string //this is an abstraction of an array, slices 
-	// var bookings = [50]string{} //this is an array, we can't mix.
-	// var bookings = [50]string arrayType
-	greetUsers(conferenceName, conferenceTickets, remainingTickets)
+	// no need to pass those variables, they can be accessed from the package level
+	greetUsers()
 
 	for remainingTickets > 0 && len(bookings) < 50{  
 		firstName, lastName, email, userTickets := getUserInput()
 
 		//validation 
-		isValidName, isValidEmail, isValidTickets := validateUserInput(firstName, lastName, email, userTickets, remainingTickets)
+		isValidName, isValidEmail, isValidTickets := validateUserInput(firstName, lastName, email, userTickets)
 
 		if isValidName && isValidEmail && isValidTickets {
-			bookTickets(remainingTickets, userTickets, bookings, firstName, lastName, email, conferenceName)
-			firstNames := getFirstNames(bookings)
+			bookTickets(remainingTickets, firstName, lastName, email)
+			firstNames := getFirstNames()
 			fmt.Printf("The first names of bookings are: %v\n", firstNames)
 			
 			if remainingTickets == 0{
@@ -41,28 +43,15 @@ func main() {
 			fmt.Println("You filled out the input incorrectly. Please try again")
 		}
 	}
-
-	// city := "London"
-
-	// switch city {
-	// 	case "New York":
-	// 	case "Singapore":
-	// 	case "London", "Berlin" :
-	// 		// same logic for London and Berlin
-	// 	case "Mexico City":
-	// 	case "Hong Kong":
-	// 	default:
-	// 		fmt.Print("No valid city selected")
-	// }
 }
-
-func greetUsers (conferenceName string, conferenceTickets int, remainingTickets uint)  {
+// no need to pass those values as input 
+func greetUsers ()  {
 	fmt.Printf("Welcome to our %v booking app!\n", conferenceName)
 	fmt.Printf("We have a total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
 	fmt.Println("Get your tickets here to attend.")
 }
 
-func getFirstNames (bookings []string) []string {
+func getFirstNames () []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
 		var names = strings.Fields(booking)
@@ -71,15 +60,7 @@ func getFirstNames (bookings []string) []string {
 	}
 	return firstNames
 }
-//with multiple returns you need ()
-func validateUserInput (firstName string, lastName string, email string, userTickets uint, remainingTickets uint) (bool, bool, bool) {
-	isValidName := len(firstName) > 1 && len(lastName) > 1
-	isValidEmail := strings.Contains(email, "@") && strings.Contains(email, ".")
-	isValidTickets := userTickets > 0 && userTickets <= remainingTickets
 
-	return isValidName, isValidEmail, isValidTickets
-
-}
 
 func getUserInput () (string, string, string, uint) {
 	var firstName string
@@ -101,9 +82,8 @@ func getUserInput () (string, string, string, uint) {
 	return firstName, lastName, email, userTickets
 }
 
-func bookTickets(remainingTickets uint, userTickets uint, bookings []string, firstName string, lastName string, email string, conferenceName string) {
+func bookTickets(userTickets uint, firstName string, lastName string, email string) {
 	remainingTickets = remainingTickets - userTickets 	
-	// bookings[0]= firstName + " " + lastName
 	bookings = append(bookings, firstName + " " + lastName) //no longer need to keep track of indices
 
 	fmt.Printf("Thank you %v %v for booking %v ticket(s). We've sent a confirmation email at %v.\n", firstName, lastName, userTickets, email)
