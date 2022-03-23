@@ -3,6 +3,7 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
+	"time"
 )
 
 // to avoid reptition we can define variables shares among functions (package level variables) and they can't use :=
@@ -30,6 +31,7 @@ func main() {
 
 		if isValidName && isValidEmail && isValidTickets {
 			bookTickets(userTickets, firstName, lastName, email)
+			sendTickets(userTickets, firstName, lastName, email)
 			firstNames := getFirstNames()
 			fmt.Printf("The first names of bookings are: %v\n", firstNames)
 			
@@ -104,4 +106,14 @@ func bookTickets(userTickets uint, firstName string, lastName string, email stri
 
 	fmt.Printf("Thank you %v %v for booking %v ticket(s). We've sent a confirmation email at %v.\n", firstName, lastName, userTickets, email)
 	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+}
+
+// generating and sending the tickets will take some time
+
+func sendTickets(userTickets uint, firstName string, lastName string, email string) {
+	time.Sleep(10 * time.Second) //this is blocking the app
+	var tickets = fmt.Sprintf("%v ticket(s) for %v %v", userTickets, firstName, lastName)
+	fmt.Println("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+	fmt.Printf("Sending: %v to %v.\n", tickets, email)
+	fmt.Println("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
 }
