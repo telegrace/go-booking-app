@@ -3,6 +3,7 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -19,11 +20,13 @@ type UserData struct  {
 	numberOfTickets uint
 }
 
+var wg = sync.WaitGroup{}
+
 func main() {
 	// no need to pass those variables, they can be accessed from the package level
 	greetUsers()
 
-	for remainingTickets > 0 && len(bookings) < 50{  
+	// for remainingTickets > 0 && len(bookings) < 50{  
 		firstName, lastName, email, userTickets := getUserInput()
 
 		//validation 
@@ -31,13 +34,18 @@ func main() {
 
 		if isValidName && isValidEmail && isValidTickets {
 			bookTickets(userTickets, firstName, lastName, email)
-			sendTickets(userTickets, firstName, lastName, email)
+			
+			// we need to spin off a new thread, once it's completed, the thread will be deleted 
+			wg.Add(1) //the amount of threads
+			go sendTickets(userTickets, firstName, lastName, email)
+
+
 			firstNames := getFirstNames()
 			fmt.Printf("The first names of bookings are: %v\n", firstNames)
 			
 			if remainingTickets == 0{
 				fmt.Println("Our conference is sold out. Come back next year.")
-				break
+				// break
 			}
 		} else {
 			if !isValidName {
@@ -51,7 +59,8 @@ func main() {
 			}
 			fmt.Println("You filled out the input incorrectly. Please try again")
 		}
-	}
+	// }
+	wg.Wait()
 }
 // no need to pass those values as input 
 func greetUsers ()  {
@@ -109,11 +118,11 @@ func bookTickets(userTickets uint, firstName string, lastName string, email stri
 }
 
 // generating and sending the tickets will take some time
-
 func sendTickets(userTickets uint, firstName string, lastName string, email string) {
 	time.Sleep(10 * time.Second) //this is blocking the app
 	var tickets = fmt.Sprintf("%v ticket(s) for %v %v", userTickets, firstName, lastName)
 	fmt.Println("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
 	fmt.Printf("Sending: %v to %v.\n", tickets, email)
 	fmt.Println("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+	wg.Done()
 }
