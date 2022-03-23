@@ -3,14 +3,20 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"strconv"
 )
 
 // to avoid reptition we can define variables shares among functions (package level variables) and they can't use :=
 const conferenceTickets = 50
 var conferenceName = "Go Conference"
 var remainingTickets uint = 50 
-var bookings = make([]map[string]string, 0) //empty slice of maps needs to have a size
+var bookings = make([]UserData, 0) //empty slice of maps needs to have a size
+
+type UserData struct  {
+	firstName string
+	lastName string
+	email string
+	numberOfTickets uint
+}
 
 func main() {
 	// no need to pass those variables, they can be accessed from the package level
@@ -23,7 +29,7 @@ func main() {
 		isValidName, isValidEmail, isValidTickets := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 
 		if isValidName && isValidEmail && isValidTickets {
-			bookTickets(remainingTickets, firstName, lastName, email)
+			bookTickets(userTickets, firstName, lastName, email)
 			firstNames := getFirstNames()
 			fmt.Printf("The first names of bookings are: %v\n", firstNames)
 			
@@ -54,10 +60,10 @@ func greetUsers ()  {
 
 func getFirstNames () []string {
 	firstNames := []string{}
-	//each booking is now a map and not string
+	//each booking is now a struct and not a map
 	for _, booking := range bookings {
 		// append(what_we_are_appending_to, what_we_are_appending)
-		firstNames = append(firstNames, booking["firstName"])
+		firstNames = append(firstNames, booking.firstName)
 	}
 	return firstNames
 }
@@ -86,13 +92,14 @@ func bookTickets(userTickets uint, firstName string, lastName string, email stri
 	remainingTickets = remainingTickets - userTickets 	
 	
 	//create a map for the a user 
-	var userMap = make(map[string]string)
-	userMap["firstName"] = firstName
-	userMap["lastName"] = lastName
-	userMap["email"] = email
-	userMap["numberOfTickets"] = 	strconv.FormatUint(uint64(userTickets), 10)
+	var userData = UserData{
+		firstName: firstName,
+		lastName: lastName,
+		email: email,
+		numberOfTickets: userTickets,
+	}
 
-	bookings = append(bookings, userMap) 
+	bookings = append(bookings, userData) 
 	fmt.Printf("List of bookings is %v\n", bookings)
 
 	fmt.Printf("Thank you %v %v for booking %v ticket(s). We've sent a confirmation email at %v.\n", firstName, lastName, userTickets, email)
